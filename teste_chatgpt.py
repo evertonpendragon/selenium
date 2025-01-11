@@ -3,6 +3,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 
+
+def remove_enter(text):
+    return text.replace('\n', ' ').replace('\r', ' ')
+
+
 # Carregar o conteúdo do arquivo input.txt
 with open('input.txt', 'r', encoding='utf-8') as file:
     content = file.read()
@@ -22,12 +27,8 @@ options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")  # Porta do
 # Substitua 'path_to_chromedriver' pelo caminho correto do seu ChromeDriver
 #driver = webdriver.Chrome(executable_path='path_to_chromedriver', options=options)
 #driver = webdriver.Chrome(executable_path='"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"', options=options)
-driver = webdriver.Chrome(options=options)
 #options.add_argument("--start-maximized")
-
-
-
-
+driver = webdriver.Chrome(options=options)
 
 try:
     # Abrir a URL do ChatGPT (substitua pela URL correta)
@@ -37,6 +38,13 @@ try:
         raise Exception("Certifique-se de que a janela do navegador já está na página do ChatGPT.")
 
 
+
+    prompt_box = driver.find_element(By.ID, "prompt-textarea")
+    prompt_box.send_keys("Você é um especialista em narração de audiobooks. Qualquer texto enviado aqui será transcrito na íntegra, sem qualquer alteração ou adição. Também não adicione mensagens na resposta.")
+    time.sleep(20)
+    prompt_box.send_keys(Keys.RETURN)
+    time.sleep(20)
+
     # Aguarde o carregamento completo da página
     time.sleep(5)  # Ajuste conforme necessário
 
@@ -45,6 +53,9 @@ try:
 
         # Localizar o campo de entrada do prompt (substitua pelo seletor correto)
         prompt_box = driver.find_element(By.ID, "prompt-textarea")
+
+
+        section = remove_enter(section)
 
         # Enviar o texto no campo de entrada
         prompt_box.send_keys(section)
